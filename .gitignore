@@ -135,3 +135,9 @@ weights/saved_checkpoint.hdf5
 lines.txt
 *.png
 *uttlist
+
+## logs
+logs*
+
+## weights
+weights/EASTER*

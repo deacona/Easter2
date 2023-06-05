@@ -1,3 +1,4 @@
+from loguru import logger
 import config
 import tensorflow
 import tensorflow.keras.backend as K
@@ -226,12 +227,12 @@ def train():
     
     # Loading checkpoint for transfer/resuming learning
     if config.LOAD:
-        print ("Intializing from checkpoint : ", config.LOAD_CHECKPOINT_PATH)
+        logger.info(f"Intializing from checkpoint : {config.LOAD_CHECKPOINT_PATH}")
         model.load_weights(config.LOAD_CHECKPOINT_PATH)
-        print ("Init weights loaded successfully....")
+        logger.info("Init weights loaded successfully....")
         
     # Loading Metadata, about training, validation and Test sets
-    print ("loading metdata...")
+    logger.info("loading metdata...")
     training_data = data_loader(config.DATA_PATH, config.BATCH_SIZE)
     validation_data = data_loader(config.DATA_PATH, config.BATCH_SIZE)
     test_data = data_loader(config.DATA_PATH, config.BATCH_SIZE)
@@ -240,10 +241,10 @@ def train():
     validation_data.validationSet()
     test_data.testSet()
 
-    print("Training Samples : ", len(training_data.samples))
-    print("Validation Samples : ", len(validation_data.samples))
-    print("Test Samples : ", len(test_data.samples))
-    print("CharList Size : ", len(training_data.charList))
+    logger.info(f"Training Samples : {len(training_data.samples)}")
+    logger.info(f"Validation Samples : {len(validation_data.samples)}")
+    logger.info(f"Test Samples : {len(test_data.samples)}")
+    logger.info(f"CharList Size : {len(training_data.charList)}")
     
     # callback arguments
     CHECKPOINT = tensorflow.keras.callbacks.ModelCheckpoint(
@@ -267,7 +268,7 @@ def train():
     VALIDATION_STEPS = len(validation_data.samples)//config.BATCH_SIZE
 
     # Start training with given parameters
-    print ("Training Model...")
+    logger.info("Training Model...")
     model.fit_generator(
         generator = training_data.getNext(), 
         steps_per_epoch = STEPS_PER_EPOCH,

@@ -7,6 +7,7 @@ import cv2
 import numpy as np
 import itertools
 import argparse 
+import os
 
 parser = argparse.ArgumentParser()
 
@@ -64,12 +65,15 @@ if __name__ == "__main__":
     ## usage
     ## python predict_line.py --path ~/garbage/images/test1.jpg
 
+    os.chdir("src")
+
     with open("../data/charlist") as f:
         charlist = [word.strip("\n") for word in f ]
 
     ## instead of loading the data path, you can write the charlist file in your local storage for the next time.
     infer_obj = infer_img(charlist)
 
+    print("\n############\nPredicted line text is:\n")
     print(infer_obj.predict(args.path)) ## change the image path with the file path you want
 
 ''' **Note**: this prediction is only good with line level images because this model has trained on IAM dataset 

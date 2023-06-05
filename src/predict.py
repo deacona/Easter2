@@ -1,3 +1,4 @@
+from loguru import logger
 import config
 import tensorflow
 import tensorflow as tf
@@ -52,7 +53,7 @@ def load_easter_model(checkpoint_path):
             checkpoint.get_layer('Final').output
         )
     except:
-        print ("Unable to Load Checkpoint.")
+        logger.info("Unable to Load Checkpoint.")
         return None
     return EASTER
     
@@ -70,7 +71,7 @@ def decoder(output,letters):
     
 def test_on_iam(show = True, partition='test', uncased=False, checkpoint="Empty"):
     
-    print ("loading metdata...")
+    logger.info("loading metdata...")
     training_data = data_loader(config.DATA_PATH, config.BATCH_SIZE)
     validation_data = data_loader(config.DATA_PATH, config.BATCH_SIZE)
     test_data = data_loader(config.DATA_PATH, config.BATCH_SIZE)
@@ -79,8 +80,8 @@ def test_on_iam(show = True, partition='test', uncased=False, checkpoint="Empty"
     validation_data.validationSet()
     test_data.testSet()
     charlist = training_data.charList
-    print ("loading checkpoint...")
-    print ("calculating results...")
+    logger.info("loading checkpoint...")
+    logger.info("calculating results...")
     
     model = load_easter_model(checkpoint)
     char_error = 0
@@ -90,13 +91,13 @@ def test_on_iam(show = True, partition='test', uncased=False, checkpoint="Empty"
     while batches > 0:
         batches = batches - 1
         if partition == 'validation':
-            print ("Using Validation Partition")
+            logger.info("Using Validation Partition")
             imgs, truths, _ = validation_data.getValidationImage()
         else:
-            print ("Using Test Partition")
+            logger.info("Using Test Partition")
             imgs,truths,_ = test_data.getTestImage()
 
-        print ("Number of Samples : ",len(imgs))
+        logger.info(f"Number of Samples : {len(imgs)}")
         for i in tqdm(range(0,len(imgs))):
             img = imgs[i]
             truth = truths[i].strip(" ").replace("  "," ")
@@ -110,7 +111,8 @@ def test_on_iam(show = True, partition='test', uncased=False, checkpoint="Empty"
                 
             total_chars += len(truth)
             if show:
-                print ("Ground Truth :", truth)
-                print("Prediction [",edit_distance(output,truth),"]  : ",output)
-                print ("*"*50)
-    print ("Character error rate is : ",(char_error/total_chars)*100)
+                logger.info(f"Ground Truth :{truth}")
+                logger.info(f"Prediction [{edit_distance(output,truth)}]  : {output}")
+                logger.info("*"*50)
+    cer_val = (char_error/total_chars)*100
+    logger.info(f"Character error rate is : {cer_val}")
