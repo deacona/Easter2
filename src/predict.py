@@ -7,6 +7,20 @@ from editdistance import eval as edit_distance
 from tqdm import tqdm
 from data_loader import data_loader
 import tensorflow.keras.backend as K
+import os
+
+def select_model_weights():
+    weights_dir = "../weights"
+    weights_files = [x for x in os.listdir(weights_dir) if x.startswith("EASTER2--")]
+
+    if config.SELECT_BEST_CER:
+        sorted_files = sorted(weights_files, key=lambda x: x.split("--")[2], reverse=False)
+    else:
+        sorted_files = sorted(weights_files, key=lambda x: x.split("--")[1], reverse=True)
+
+    selected_filepath = os.path.join(weights_dir, sorted_files[0])
+
+    return selected_filepath
 
 def ctc_custom(args):
     y_pred, labels, input_length, label_length = args
@@ -24,7 +38,8 @@ def ctc_custom(args):
 
 def load_easter_model(checkpoint_path):
     if checkpoint_path == "Empty":
-        checkpoint_path = config.BEST_MODEL_PATH
+        # checkpoint_path = config.BEST_MODEL_PATH
+        checkpoint_path = select_model_weights()
     try:
         checkpoint = tensorflow.keras.models.load_model(
             checkpoint_path,

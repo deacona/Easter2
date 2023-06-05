@@ -4,3 +4,4 @@ matplotlib
 editdistance
 taco-box
 tqdm
+pandas

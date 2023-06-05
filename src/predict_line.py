@@ -46,7 +46,8 @@ class infer_img:
     
     def __init__(self, charlist):
         
-        self.model = load_easter_model(config.BEST_MODEL_PATH)
+        # self.model = load_easter_model(config.BEST_MODEL_PATH)
+        self.model = load_easter_model("Empty")
         self.charlist = charlist
         
     def predict(self, img_path):

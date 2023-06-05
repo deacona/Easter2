@@ -130,3 +130,8 @@ dmypy.json
 
 ## weight file
 weights/saved_checkpoint.hdf5
+
+## data
+lines.txt
+*.png
+*uttlist
