@@ -9,17 +9,19 @@ from tqdm import tqdm
 from data_loader import data_loader
 import tensorflow.keras.backend as K
 import os
+import jiwer
 
 def select_model_weights():
     weights_dir = "../weights"
     weights_files = [x for x in os.listdir(weights_dir) if x.startswith("EASTER2--")]
 
     if config.SELECT_BEST_CER:
-        sorted_files = sorted(weights_files, key=lambda x: x.split("--")[2], reverse=False)
+        sorted_files = sorted(weights_files, key=lambda x: float(x.split("--")[2].replace(".hdf5", "")), reverse=False)
     else:
-        sorted_files = sorted(weights_files, key=lambda x: x.split("--")[1], reverse=True)
+        sorted_files = sorted(weights_files, key=lambda x: int(x.split("--")[1]), reverse=True)
 
     selected_filepath = os.path.join(weights_dir, sorted_files[0])
+    logger.info(f"Selected model weights file: {selected_filepath}")
 
     return selected_filepath
 
@@ -70,8 +72,8 @@ def decoder(output,letters):
     return ret
     
 def test_on_iam(show = True, partition='test', uncased=False, checkpoint="Empty"):
-    
-    logger.info("loading metdata...")
+        
+    logger.info("loading metadata...")
     training_data = data_loader(config.DATA_PATH, config.BATCH_SIZE)
     validation_data = data_loader(config.DATA_PATH, config.BATCH_SIZE)
     test_data = data_loader(config.DATA_PATH, config.BATCH_SIZE)
@@ -80,13 +82,17 @@ def test_on_iam(show = True, partition='test', uncased=False, checkpoint="Empty"
     validation_data.validationSet()
     test_data.testSet()
     charlist = training_data.charList
+
     logger.info("loading checkpoint...")
-    logger.info("calculating results...")
-    
     model = load_easter_model(checkpoint)
+
+    logger.info("calculating results...")
     char_error = 0
     total_chars = 0
-    
+
+    truth_list = []
+    pred_list = []
+
     batches = 1
     while batches > 0:
         batches = batches - 1
@@ -104,10 +110,15 @@ def test_on_iam(show = True, partition='test', uncased=False, checkpoint="Empty"
             output = model.predict(img)
             prediction = decoder(output, charlist)
             output = (prediction[0].strip(" ").replace("  ", " "))
+            
             if uncased:
                 char_error += edit_distance(output.lower(),truth.lower())
+                pred_list.append(output.lower())
+                truth_list.append(truth.lower())
             else:
                 char_error += edit_distance(output,truth)
+                pred_list.append(output)
+                truth_list.append(truth)
                 
             total_chars += len(truth)
             if show:
@@ -116,3 +127,11 @@ def test_on_iam(show = True, partition='test', uncased=False, checkpoint="Empty"
                 logger.info("*"*50)
     cer_val = (char_error/total_chars)*100
     logger.info(f"Character error rate is : {cer_val}")
+
+    char_metrics = jiwer.process_characters(truth_list, pred_list)
+    logger.info(f"(JiWER) CER: {char_metrics.cer}")
+    word_metrics = jiwer.process_words(truth_list, pred_list)
+    logger.info(f"(JiWER) WER: {word_metrics.wer}")
+    logger.info(f"(JiWER) MER: {word_metrics.mer}")
+    logger.info(f"(JiWER) MIL: {word_metrics.wil}")
+    logger.info(f"(JiWER) WIP: {word_metrics.wip}")
