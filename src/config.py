@@ -3,7 +3,7 @@ Before training and evaluation - make sure to select desired/correct settings
 """
 
 # Input dataset related settings
-DATA_PATH = "../data/"
+DATA_PATH = "../data_Devon/"
 INPUT_HEIGHT = 80
 INPUT_WIDTH = 2000
 INPUT_SHAPE = (INPUT_WIDTH, INPUT_HEIGHT)
@@ -11,7 +11,7 @@ INPUT_SHAPE = (INPUT_WIDTH, INPUT_HEIGHT)
 TACO_AUGMENTAION_FRACTION = 0.9
 
 # If Long lines augmentation is needed (see paper)
-LONG_LINES = True
+LONG_LINES = False
 LONG_LINES_FRACTION = 0.3
 
 # Model training parameters

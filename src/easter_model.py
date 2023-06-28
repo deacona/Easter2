@@ -267,6 +267,9 @@ def train():
     STEPS_PER_EPOCH = len(training_data.samples)//config.BATCH_SIZE
     VALIDATION_STEPS = len(validation_data.samples)//config.BATCH_SIZE
 
+    logger.info(f"Steps per epoch : {STEPS_PER_EPOCH}")
+    logger.info(f"Validation steps : {VALIDATION_STEPS}")
+
     # Start training with given parameters
     logger.info("Training Model...")
     model.fit_generator(
