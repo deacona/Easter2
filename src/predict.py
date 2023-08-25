@@ -101,7 +101,7 @@ def test_on_iam(show = True, partition='test', uncased=False, checkpoint="Empty"
             imgs, truths, _ = validation_data.getValidationImage()
         else:
             logger.info("Using Test Partition")
-            imgs,truths,_ = test_data.getTestImage()
+            imgs, truths, _ = test_data.getTestImage()
 
         logger.info(f"Number of Samples : {len(imgs)}")
         for i in tqdm(range(0,len(imgs))):
@@ -112,17 +112,16 @@ def test_on_iam(show = True, partition='test', uncased=False, checkpoint="Empty"
             output = (prediction[0].strip(" ").replace("  ", " "))
             
             if uncased:
-                char_error += edit_distance(output.lower(),truth.lower())
-                pred_list.append(output.lower())
-                truth_list.append(truth.lower())
-            else:
-                char_error += edit_distance(output,truth)
-                pred_list.append(output)
-                truth_list.append(truth)
+                output = output.lower()
+                truth = truth.lower()
+
+            char_error += edit_distance(output,truth)
+            pred_list.append(output)
+            truth_list.append(truth)
                 
             total_chars += len(truth)
             if show:
-                logger.info(f"Ground Truth :{truth}")
+                logger.info(f"Ground Truth    : {truth}")
                 logger.info(f"Prediction [{edit_distance(output,truth)}]  : {output}")
                 logger.info("*"*50)
     cer_val = (char_error/total_chars)*100

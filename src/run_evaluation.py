@@ -14,8 +14,8 @@ logger.info("EVALUATION STARTED")
 from predict import test_on_iam
 checkpoint_path = "Empty"
 
-test_on_iam(show=False, partition="validation", checkpoint=checkpoint_path, uncased=True)
+test_on_iam(show=True, partition="validation", checkpoint=checkpoint_path, uncased=True)
 
-test_on_iam(show=False, partition="test", checkpoint=checkpoint_path, uncased=True)
+test_on_iam(show=True, partition="test", checkpoint=checkpoint_path, uncased=True)
 
 logger.success("EVALUATION COMPLETED")
